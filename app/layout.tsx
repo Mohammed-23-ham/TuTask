@@ -22,7 +22,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       suppressHydrationWarning
-      tramslate="yes"
+      translate="yes"
       className={cn("h-full", "antialiased", robotoSans.variable, "font-sans", inter.variable)}
     >
       <head>
