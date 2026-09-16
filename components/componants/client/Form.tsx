@@ -42,7 +42,7 @@ export function DraftForm() {
     value: Schema[Key],
   ) => {
     setValues((currentValues) => ({ ...currentValues, [key]: value }));
-    form.setValue(key, value, { shouldValidate: true });
+    form.setValue(key, value as never, { shouldValidate: true });
   };
 
   const {
