@@ -1,4 +1,4 @@
-import Login from "@/public/componants/dashboard/Login";
+import Login from "@/components/componants/dashboard/Login";
 
 export default function Home() {
   return (
