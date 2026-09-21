@@ -56,6 +56,14 @@ export function DraftForm() {
 
       const workerId = data.WorkerID.trim();
 
+      if (!workerId || workerId.toLowerCase() === "nan") {
+        form.setError("WorkerID", {
+          type: "manual",
+          message: "Enter a valid user ID.",
+        });
+        return;
+      }
+
       const record = await pb.collection("Tasks").create({
         firstName: data["First name"],
         lastName: data["Last Name"],

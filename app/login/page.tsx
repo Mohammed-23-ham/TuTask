@@ -1,7 +1,7 @@
-import Login from "@/components/componants/dashboard/Login";
+import { DraftForm } from "@/components/componants/dashboard/Login";
 
 export default function Home() {
   return (
-    <Login />
+    <DraftForm />
   );
 }
