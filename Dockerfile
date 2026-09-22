@@ -16,6 +16,7 @@ RUN apk add --no-cache ca-certificates
 
 WORKDIR /pb
 COPY --from=downloader /opt/pocketbase/pocketbase /pb/pocketbase
+COPY pb/pb_migrations /pb/pb_migrations
 
 ENV PORT=8080
 EXPOSE 8080

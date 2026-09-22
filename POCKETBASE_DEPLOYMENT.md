@@ -5,6 +5,11 @@ Copy `.env.example` to `.env.local` for local development, and set the same
 variable in the hosting provider for production. Do not expose a superuser
 email or password in the Next.js app.
 
+The Docker image copies `pb/pb_migrations` to `/pb/pb_migrations`. Mount a
+Render persistent disk only at `/pb/pb_data`, not at `/pb`, so the disk does
+not hide the migrations included in the image. PocketBase runs pending
+migrations when the container starts.
+
 ## Collections
 
 Create an auth collection named `users` and a collection named `Tasks` with
