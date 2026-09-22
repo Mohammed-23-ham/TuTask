@@ -15,10 +15,49 @@ const robotoSans = Roboto({
   subsets: ["latin"],
 });
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+
 export const metadata: Metadata = {
-  title: "TuTask",
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "TuTask | Task Management",
+    template: "%s | TuTask",
+  },
   description:
-    "Manage your tasks efficiently with TuTask, the ultimate task management app.",
+    "TuTask helps teams submit, organize, and track tasks from one focused workspace.",
+  applicationName: "TuTask",
+  keywords: ["task management", "task tracking", "team tasks", "TuTask"],
+  authors: [{ name: "TuTask" }],
+  creator: "TuTask",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    url: "/",
+    siteName: "TuTask",
+    title: "TuTask | Task Management",
+    description:
+      "Submit, organize, and track tasks from one focused workspace.",
+    images: [
+      {
+        url: "/imgs/favicon.png",
+        width: 32,
+        height: 32,
+        alt: "TuTask logo",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary",
+    title: "TuTask | Task Management",
+    description:
+      "Submit, organize, and track tasks from one focused workspace.",
+    images: ["/imgs/favicon.png"],
+  },
+  icons: {
+    icon: "/imgs/favicon.png",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
