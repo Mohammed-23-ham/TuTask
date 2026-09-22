@@ -106,13 +106,18 @@ const Dashboard = () => {
           filter: `workerId = "${currentUserId}"`,
           requestKey: null,
         });
+        const sortedTaskRecords = [...taskRecords].sort(
+          (firstTask, secondTask) =>
+            new Date(secondTask.created).getTime() -
+            new Date(firstTask.created).getTime(),
+        );
 
-        setTasks(taskRecords);
+        setTasks(sortedTaskRecords);
         setTaskCounts({
-          all: taskRecords.length,
-          completed: taskRecords.filter((task) => task.status === "completed").length,
-          pending: taskRecords.filter((task) => task.status === "pending").length,
-          cancelled: taskRecords.filter((task) => task.status === "cancelled").length,
+          all: sortedTaskRecords.length,
+          completed: sortedTaskRecords.filter((task) => task.status === "completed").length,
+          pending: sortedTaskRecords.filter((task) => task.status === "pending").length,
+          cancelled: sortedTaskRecords.filter((task) => task.status === "cancelled").length,
         });
       } catch (error) {
         // يسجّل تفاصيل الخطأ لتسهيل تشخيص فشل تحميل المهام.
@@ -180,8 +185,8 @@ const Dashboard = () => {
     <main>
       <div className="flex flex-col justify-start gap-3 mx-5 my-1">
         <h1 className="text-primary text-xl font-bold">Dashboard</h1>
-        <span className="text-sm text-secondary">
-          Admin: {pb.authStore.record?.email}
+        <span className="flex flex-row text-sm text-secondary">
+          <h2>Admin:</h2> {pb.authStore.record?.email}
         </span>
       </div>
       <div className="grid grid-cols-2 gap-3 mx-5 my-4 md:grid-cols-4">
@@ -197,9 +202,9 @@ const Dashboard = () => {
           >
             <Icon className="size-7 shrink-0 text-secondary" aria-hidden="true" />
             <div className="flex min-w-0 flex-col">
-              <h2 className="text-xl font-bold text-primary">
+              <h3 className="text-xl font-bold text-primary">
                 {loading ? "..." : count}
-              </h2>
+              </h3>
               <span className="truncate text-sm text-secondary">{label}</span>
             </div>
           </div>
@@ -210,7 +215,115 @@ const Dashboard = () => {
           {statusError}
         </p>
       )}
-      <section className="mx-5 my-6 rounded-md border border-border bg-card shadow-sm">
+      <div className="mx-5 my-6 space-y-3 min-[875px]:hidden">
+        {tasks.map((task) => {
+          const taskText = task.taskContent ?? "";
+          const visibleTask = taskText.slice(0, 20);
+          const status = task.status ?? "pending";
+          const statusOptions = [
+            status,
+            ...taskStatuses.filter((taskStatus) => taskStatus !== status),
+          ];
+
+          return (
+            <article
+              key={task.id}
+              className="rounded-md border border-border bg-card p-4 shadow-sm"
+            >
+              <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
+                <div>
+                  <span className="block text-xs text-muted-foreground">First Name</span>
+                  <span className="break-words text-card-foreground">{task.firstName || "-"}</span>
+                </div>
+                <div>
+                  <span className="block text-xs text-muted-foreground">Last Name</span>
+                  <span className="break-words text-card-foreground">{task.lastName || "-"}</span>
+                </div>
+                <div>
+                  <span className="block text-xs text-muted-foreground">State</span>
+                  <div className="relative mt-1 w-fit">
+                    <button
+                      type="button"
+                      disabled={updatingTaskId === task.id}
+                      onClick={() =>
+                        setOpenStatusTaskId((currentTaskId) =>
+                          currentTaskId === task.id ? "" : task.id,
+                        )
+                      }
+                      className={`flex min-w-28 items-center justify-between gap-2 rounded-full px-3 py-1 text-xs font-semibold capitalize transition-all duration-300 ${
+                        status === "completed"
+                          ? "bg-green-100 text-green-700"
+                          : status === "cancelled"
+                            ? "bg-red-100 text-red-700"
+                            : "bg-yellow-100 text-yellow-700"
+                      }`}
+                    >
+                      {status}
+                      <FiChevronDown
+                        className={`transition-transform duration-300 ${
+                          openStatusTaskId === task.id ? "rotate-180" : ""
+                        }`}
+                      />
+                    </button>
+                    <div
+                      className={`mt-2 min-w-28 overflow-hidden rounded-md border bg-card shadow-md transition-all duration-300 ${
+                        openStatusTaskId === task.id
+                          ? "max-h-24 scale-100 border-border p-1 opacity-100"
+                          : "pointer-events-none max-h-0 scale-95 border-transparent p-0 opacity-0"
+                      }`}
+                    >
+                      {statusOptions.slice(1).map((option) => (
+                        <button
+                          key={option}
+                          type="button"
+                          onClick={() => {
+                            setOpenStatusTaskId("");
+                            handleStatusChange(task.id, option);
+                          }}
+                          className="block w-full rounded px-3 py-2 text-left text-xs capitalize text-foreground transition-all duration-300 hover:bg-muted"
+                        >
+                          {option}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <span className="block text-xs text-muted-foreground">Date</span>
+                  <span className="break-words text-card-foreground">
+                    {new Date(task.created).toLocaleDateString("en-GB")}
+                  </span>
+                </div>
+                <div className="col-span-2">
+                  <span className="block text-xs text-muted-foreground">Task</span>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setExpandedTaskId((currentTaskId) =>
+                        currentTaskId === task.id ? "" : task.id,
+                      )
+                    }
+                    className="w-full break-words text-left text-sm text-muted-foreground transition-all duration-300 hover:text-foreground"
+                  >
+                    {expandedTaskId === task.id
+                      ? taskText || "-"
+                      : `${visibleTask}${taskText.length > 20 ? "..." : ""}`}
+                  </button>
+                </div>
+                <div className="col-span-2">
+                  <span className="block text-xs text-muted-foreground">Email</span>
+                  <span className="break-all text-card-foreground">{task.email || "-"}</span>
+                </div>
+                <div className="col-span-2">
+                  <span className="block text-xs text-muted-foreground">Phone</span>
+                  <span className="break-words text-card-foreground">{task.phone || "-"}</span>
+                </div>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+      <section className="mx-5 my-6 hidden rounded-md border border-border bg-card shadow-sm min-[875px]:block">
         <div className="w-full">
           <table className="w-full table-fixed text-left text-sm text-card-foreground">
             <thead className="border-b border-border bg-muted text-xs uppercase text-muted-foreground">
@@ -267,10 +380,10 @@ const Dashboard = () => {
                           />
                         </button>
                         <div
-                          className={`absolute left-0 top-full z-10 mt-2 min-w-28 origin-top rounded-md border border-border bg-card p-1 shadow-md transition-all duration-300 ${
+                          className={`mt-2 min-w-28 origin-top overflow-hidden rounded-md border bg-card shadow-md transition-all duration-300 ${
                             openStatusTaskId === task.id
-                              ? "visible scale-100 opacity-100"
-                              : "invisible scale-95 opacity-0"
+                              ? "max-h-24 scale-100 border-border p-1 opacity-100"
+                              : "pointer-events-none max-h-0 scale-95 border-transparent p-0 opacity-0"
                           }`}
                           role="listbox"
                           aria-label="Task status options"
