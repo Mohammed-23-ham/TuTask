@@ -200,12 +200,12 @@ const Dashboard = () => {
             key={label}
             className="flex min-h-24 items-center gap-3 rounded-md border border-border bg-card px-4 py-3 text-card-foreground shadow-sm"
           >
-            <Icon className="size-7 shrink-0 text-secondary" aria-hidden="true" />
+            <Icon className="size-7 shrink-0 text-primary" aria-hidden="true" />
             <div className="flex min-w-0 flex-col">
-              <h3 className="text-xl font-bold text-primary">
+              <h3 className="text-xl font-bold text-secondary ">
                 {loading ? "..." : count}
               </h3>
-              <span className="truncate text-sm text-secondary">{label}</span>
+              <span className="truncate text-sm text-primary">{label}</span>
             </div>
           </div>
         ))}
