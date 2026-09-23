@@ -29,6 +29,9 @@ export const metadata: Metadata = {
   keywords: ["task management", "task tracking", "team tasks", "TuTask"],
   authors: [{ name: "TuTask" }],
   creator: "TuTask",
+  verification: {
+    google: "X-gvcvXbikIWv4dfaHxkPzEaJy-NiDn5GZfDdQdO66I",
+  },
   alternates: {
     canonical: "/",
   },
